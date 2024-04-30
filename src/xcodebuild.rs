@@ -1,33 +1,68 @@
 use std::process::Command;
 use std::io::{self, Write};
 
-fn xcodebuild_xcarchive(project_name: String, project_path: String, archive_path: String) {
+use crate::enum_page::IosPlatform;
 
-    let output = Command::new("xcodebuild")
+
+pub fn xcodebuild_xcarchive(scheme_name: String, project_file_path: String, archive_file_path: String, platform: IosPlatform) {
+
+    let platform_str = framework_platform_str(&platform);
+    let platform_command = format!("generic/platform={}",platform_str);
+    
+    let _archive_output = Command::new("xcodebuild")
         .arg("archive")
         .arg("-project")
-        .arg("/Users/stephen003/Documents/work project/ios_bt_sdk/IOS_SWIFT_BLE_SDK/IOS_SWIFT_BLE_SDK.xcodeproj")
+        .arg(project_file_path)
         .arg("-scheme")
-        .arg("IOS_SWIFT_BLE_SDK")
+        .arg(scheme_name)
         .arg("-configuration")
         .arg("Release")
         .arg("-destination")
-        .arg("generic/platform=iOS")
+        .arg(platform_command)
         .arg("-archivePath")
-        .arg("/Users/stephen003/Documents/work project/buildSDK/test_auto/IOS_SWIFT_BLE_SDK.xcarchive")
+        .arg(archive_file_path)
         .arg("SKIP_INSTALL=NO")
         .arg("BUILD_LIBRARIES_FOR_DISTRIBUTION=NO")
         .output()
         .expect("Failed to execute command");
 
-    print!("{:?}", output);
+    // print!("{:?}", archive_output);
 }
 
+pub fn xcodebuild_create_xcframework(files_path: &[String], xcframework_path: &str) -> io::Result<()> {
+    let mut command = Command::new("xcodebuild");
+    command.arg("-create-xcframework");
 
-fn get_user_input(path: &str) -> String {
-    print!("{}", path);
+    for file in files_path {
+        command.arg("-framework").arg(file);
+    }
+    command.arg("-output").arg(xcframework_path);
 
-    io::stdout().flush().expect("Failed to flush stdout");
+    let output = command.output()?;
+
+    if output.status.success() {
+        println!("XCFramework created successfully");
+    } else {
+        eprintln!("Error: {}", String::from_utf8_lossy(&output.stderr));
+    }
+
+    if !output.status.success() {
+        return Err(io::Error::new(io::ErrorKind::Other, "Failed to create XCFramework"));
+    }
+
+    // print!("{:?}", command);
+
+    Ok(())
+}
+
+// ask user to enter info
+pub fn get_user_input(sentence: &str) -> String {
+    // show the sentence to the user
+    print!("{}", sentence);
+
+    io::stdout()
+      .flush()
+      .expect("Failed to flush stdout");
 
     let mut input = String::new();
 
@@ -38,15 +73,16 @@ fn get_user_input(path: &str) -> String {
     input.trim().to_string()
 }
 
-fn main() {
-    let project_name = get_user_input("What's the project name?");
-    println!("name: {}", project_name);
-    let project_path = get_user_input("Input iOS project path: ");
-    let new_project_path = project_path.replace("\\", "");
-    println!("path1: {}", new_project_path);
-    let archive_path = get_user_input("Input archive project path: ");
-    let new_archive_path = archive_path.replace("\\", "");
-    println!("path2: {}!", new_archive_path);
-
-    xcodebuild_xcarchive(project_name, new_project_path, new_archive_path)
+pub fn framework_platform_str(platform: &IosPlatform) -> &str {
+    match platform {
+        IosPlatform::Simulator => {
+            return "iOS Simulator";
+        }
+        IosPlatform::Ios => {
+            return "iOS";
+        }
+        IosPlatform::MacOS => {
+            return "macOS,arch=x86_64,variant=Mac Catalyst";
+        }
+    }
 }
