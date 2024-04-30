@@ -12,6 +12,7 @@ $ crago run
 
 #### The steps
 1. scheme name: Key in your project scheme name. It will be your xcframework name, too.
+![image](https://raw.githubusercontent.com/mirrorsalt667/rust-xcframework_creator/master/images/scheme.png)
 
 2. project path: Drag the .xcodeproj file into your terminal. It'll show the path automatically.
 
