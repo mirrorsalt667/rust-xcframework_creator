@@ -27,4 +27,17 @@ $ crago run
     - 5 for both iOS simulator and MacOS
     - 6 for all platform
 
+#### Command Demo
+##### create archive file
+$ xcodebuild archive \
+-scheme <font color="#F7A004"><scheme_name></font> \
+-configuration Release \
+-destination 'generic/platform=<font color="#F7A004"><platform></font>' \
+-archivePath '<font color="#F7A004"><archive_path></font>' \
+SKIP_INSTALL=NO \
+BUILD_LIBRARIES_FOR_DISTRIBUTION=NO
 
+##### create xcframework file
+$ xcodebuild -create-xcframework \
+-framework '<font color="#F7A004"><archive_path></font>/Products/Library/Frameworks/<font color="#F7A004"><scheme_name></font>.framework' \
+-output '<font color="#F7A004"><folder_path></font>/<font color="#F7A004"><scheme_name></font>.xcframework'
