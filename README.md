@@ -1,16 +1,18 @@
+# Automatically generate an XCFramework
+Tired of having to run multiple command lines to package the XCFramework each time, so I developed this application.
+
 ## Description
 create .xcarchive files and .xcframework file
 
-## Environment
-MacOS
-Xcode
-xcodebuild
-Rust
+## Tech Stack
+- Rust
+- command line tools: xcodebuild
 
-#### To execute the application
+
+## To execute the application
 $ crago run
 
-#### The steps
+## The steps
 1. scheme name: Key in your project scheme name. It will be your xcframework name, too.
 ![image](https://raw.githubusercontent.com/mirrorsalt667/rust-xcframework_creator/master/images/scheme.png)
 
@@ -27,7 +29,7 @@ $ crago run
     - 5 for both iOS simulator and MacOS
     - 6 for all platform
 
-#### Command Demo
+## Reference for the original command
 ##### create archive file
 $ xcodebuild archive \
 -scheme <font color="#F7A004"><scheme_name></font> \
